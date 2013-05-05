@@ -1,5 +1,6 @@
 import QtQuick 2.0
-import 'ProcList.js' as ProcList
+import ProcessLib 1.0
+//import 'ProcList.js' as ProcList
 
 Rectangle {
     id: main
@@ -8,6 +9,10 @@ Rectangle {
     color: "#000000"
 
     property int legendWidth: 100
+
+    ProcessList {
+        id: proc;
+    }
 
     Component {
         id: legend
@@ -44,10 +49,10 @@ Rectangle {
         running: true;
         repeat: true
         onTriggered: {
-            ProcList.updateData();
+            proc.update();
             graph.requestPaint();
             // update labels
-            legends.update(ProcList.getData());
+            legends.update(proc.data());
         }
     }
 
@@ -74,7 +79,7 @@ Rectangle {
             ctx.clearRect(0, 0, w, h);
             //ctx.fillRect(0, 0, w, h);
 
-            var data = ProcList.getData();
+            var data = proc.data();
 
             circleGraph(ctx, w / 2, h / 2,
                         Math.min(w, h) / 2 - 10,
@@ -107,13 +112,13 @@ Rectangle {
             // 与えられたデータの合計を計算
             var dataTotal = 0;
             for (i = 0; i < data.length; i++) {
-                dataTotal += data[i].value;
+                dataTotal += data[i].memory;
             }
             // 描画
             var dataCur = 0;
             var rgb;
             for (i = 0; i < data.length; i++) {
-                var dataNext = dataCur + data[i].value;
+                var dataNext = dataCur + data[i].memory;
                 var curAngle  = (mod(dataCur / dataTotal * 360 + 270, 360) / 180) * Math.PI;
                 var nextAngle = (mod(dataNext / dataTotal * 360 + 270, 360) / 180) * Math.PI;
                 // 円弧を描画
@@ -130,7 +135,7 @@ Rectangle {
         id: legends
         model:ListModel{}
         anchors.top: parent.top
-        anchors.left: graph.right
+        x: parent.width - main.legendWidth
         width: main.legendWidth
         height: parent.height
 
@@ -150,13 +155,13 @@ Rectangle {
             var i;
             var dataTotal = 0;
             for (i = 0; i < data.length; i++) {
-                dataTotal += data[i].value;
+                dataTotal += data[i].memory;
             }
             // ラベルを追加
             var dataCur = 0;
             var rgb;
             for (i = 0; i < data.length; i++) {
-                var dataNext = dataCur + data[i].value;
+                var dataNext = dataCur + data[i].memory;
                 rgb = hsv2rgb(Math.floor(dataCur / dataTotal * 360), 94, 256);
                 //
 //                legends.itemColor = rgb2htmlrgb(rgb.r, rgb.g, rgb.b);
@@ -164,7 +169,7 @@ Rectangle {
                 legends.model.append({
                                          "srcObject": legend,
                                          "itemColor": rgb2htmlrgb(rgb.r, rgb.g, rgb.b),
-                                         "itemLabel": data[i].label,
+                                         "itemLabel": data[i].name,
                                      });
                 //
                 y += 20;
