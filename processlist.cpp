@@ -31,16 +31,14 @@ public:
 ProcessList::ProcessList(QObject *parent)
     : QObject(parent)
 {
-//    m_process_list.append(new ProcessInfo("a", 20));
-//    m_process_list.append(new ProcessInfo("b", 10));
-//    m_process_list.append(new ProcessInfo("c", 10));
 }
 
-void ProcessList::update()
+void ProcessList::update(int listNumMax)
 {
-// return;
     qDeleteAll(m_process_list);
     m_process_list.clear();
+
+    QList<QObject*> process_list;
 
     size_t len;
 
@@ -53,7 +51,7 @@ void ProcessList::update()
 //    }
 
     // 動作中のプロセスのPID一覧を取得
-    int kern_proc_uid_mib[] = { CTL_KERN, KERN_PROC, KERN_PROC_UID, getuid() };
+    int kern_proc_uid_mib[] = { CTL_KERN, KERN_PROC, KERN_PROC_ALL };
     len = 0;
     if( ::sysctl(kern_proc_uid_mib, _countof(kern_proc_uid_mib), NULL, &len, NULL, 0) < 0 )
     {
@@ -89,16 +87,48 @@ void ProcessList::update()
         }
 
 
-        QString name = QString("%1:%2:%3").arg(kinfo.kp_proc.p_comm).arg(kinfo.kp_proc.p_pid).arg(ti.resident_size);
-        m_process_list.append(new ProcessInfo(name, ti.resident_size));
+        QString name = QString("%1").arg(kinfo.kp_proc.p_comm);
+        process_list.append(new ProcessInfo(name, ti.resident_size));
     }
 
     // メモリの使用量でソート
-    qSort(m_process_list.begin(),m_process_list.end(),ProcessInfoMemoryComp());
+    qSort(process_list.begin(), process_list.end(), ProcessInfoMemoryComp());
+
+    for(QList<QObject*>::const_iterator
+            ite = process_list.begin(),
+            last= process_list.end();
+        ite != last; ++ite)
+    {
+        const ProcessInfo* p = qobject_cast<const ProcessInfo*>(*ite);
+
+        if( listNumMax - 1 <= m_process_list.size() )
+        {
+            if( listNumMax - 1 == m_process_list.size() )
+            {
+                m_process_list.append(new ProcessInfo("[other]", 0));
+            }
+            ProcessInfo* p2 = qobject_cast<ProcessInfo*>(m_process_list.back());
+            p2->setMemory(p2->memory() + p->memory());
+        }
+        else
+        {
+            m_process_list.append(new ProcessInfo(*p));
+        }
+    }
+
+
 }
 
 QList<QObject*> ProcessList::data() const
 {
     QList<QObject*> r(m_process_list);
+//    for(QList<QObject*>::const_iterator
+//            ite = m_process_list.begin(),
+//            last= m_process_list.end();
+//        ite != last; ++ite)
+//    {
+//        const ProcessInfo* p = qobject_cast<const ProcessInfo*>(*ite);
+//        r.append(new ProcessInfo(*p));
+//    }
     return r;
 }

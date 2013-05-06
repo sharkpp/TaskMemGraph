@@ -1,14 +1,13 @@
 import QtQuick 2.0
 import ProcessLib 1.0
-//import 'ProcList.js' as ProcList
 
 Rectangle {
     id: main
-    width: 360
+    width: 480
     height: 360
     color: "#000000"
 
-    property int legendWidth: 400
+    property int legendWidth: 250
 
     ProcessList {
         id: proc;
@@ -32,27 +31,43 @@ Rectangle {
                 anchors.verticalCenter: box.verticalCenter
                 anchors.left: box.right
                 anchors.leftMargin: 5
+                width: (16 / 2) * 15
                 color: "#FFFFFF"
                 font.family: "Helvetica"
                 font.pointSize: 16
-                text: "green text"
+                text: "---"
             }
-            function init(color, text) {
+            Text {
+                id: memory
+                anchors.verticalCenter: box.verticalCenter
+                anchors.left: label.right
+                anchors.leftMargin: 5
+                width: legends.width - label.width - box.width
+                color: "#FFFFFF"
+                font.family: "Helvetica"
+                font.pointSize: 16
+                horizontalAlignment: Text.AlignRight
+                text: "---"
+            }
+            function init(color, name, value) {
                 box.color = color;
-                label.text = text;
+                label.text = name;
+                memory.text = value;
             }
         }
     }
 
     Timer {
-        interval: 500;
+        interval: 50;
         running: true;
         repeat: true
         onTriggered: {
-            proc.update();
+            proc.update(main.height / 20);
             graph.requestPaint();
             // update labels
-            legends.update(proc.data());
+            var data = proc.data();
+            //var data = [{memory:20,name:"a"},{memory:10,name:"b"},{memory:10,name:"c"}];
+            legends.update(data);
         }
     }
 
@@ -80,6 +95,7 @@ Rectangle {
             //ctx.fillRect(0, 0, w, h);
 
             var data = proc.data();
+//            var data = [{memory:20,name:"a"},{memory:10,name:"b"},{memory:10,name:"c"}];
 
             circleGraph(ctx, w / 2, h / 2,
                         Math.min(w, h) / 2 - 10,
@@ -101,8 +117,6 @@ Rectangle {
         }
 
         function circleGraph(ctx, cx, cy, r, data) {
-            // data = [25, 50, 11];
-            // ↑ソートされていることが望ましい
 
             ctx.fillStyle = '#fff';
             ctx.strokeStyle = '#000';
@@ -144,7 +158,7 @@ Rectangle {
             onLoaded: {
                 //item.visible = true;
                 item.y = (legends.count - 1) * item.height;
-                item.init(itemColor, itemLabel);
+                item.init(itemColor, itemLabel, itemValue);
             }
         }
 
@@ -164,12 +178,11 @@ Rectangle {
                 var dataNext = dataCur + data[i].memory;
                 rgb = hsv2rgb(Math.floor(dataCur / dataTotal * 360), 94, 256);
                 //
-//                legends.itemColor = rgb2htmlrgb(rgb.r, rgb.g, rgb.b);
-//                legends.itemLabel = data[i].label;
                 legends.model.append({
                                          "srcObject": legend,
                                          "itemColor": rgb2htmlrgb(rgb.r, rgb.g, rgb.b),
                                          "itemLabel": data[i].name,
+                                         "itemValue": data[i].memoryDisplay,
                                      });
                 //
                 y += 20;
