@@ -12,7 +12,7 @@ class ProcessInfo : public QObject
 public:
 
     explicit ProcessInfo(QObject *parent = 0);
-    explicit ProcessInfo(const ProcessInfo& rhs);
+    //explicit ProcessInfo(const ProcessInfo& rhs);
     explicit ProcessInfo(const QString& name_, qint64 memory_);
 
     QString name() const;

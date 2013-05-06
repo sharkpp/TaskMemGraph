@@ -6,11 +6,11 @@ ProcessInfo::ProcessInfo(QObject *parent)
 {
 }
 
-ProcessInfo::ProcessInfo(const ProcessInfo& rhs)
-    : m_name(rhs.m_name)
-    , m_memory(rhs.m_memory)
-{
-}
+//ProcessInfo::ProcessInfo(const ProcessInfo& rhs)
+//    : m_name(rhs.m_name)
+//    , m_memory(rhs.m_memory)
+//{
+//}
 
 ProcessInfo::ProcessInfo(const QString& name_, qint64 memory_)
     : m_name(name_)

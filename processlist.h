@@ -9,14 +9,18 @@ class ProcessList : public QObject
 {
     Q_OBJECT
 public:
+
     explicit ProcessList(QObject *parent = 0);
 
     Q_INVOKABLE void update();
     Q_INVOKABLE QList<QObject*> data() const;
+
 signals:
     
 public slots:
-    
+
+private:
+    QList<QObject*> m_process_list;
 };
 
 #endif // PROCESSLIST_H

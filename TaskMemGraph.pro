@@ -15,6 +15,10 @@ QML_IMPORT_PATH =
 SOURCES += main.cpp processlist.cpp processinfo.cpp
 HEADERS += processlist.h processinfo.h
 
+macx {
+    LIBS += -framework Security
+}
+
 # Installation path
 # target.path =
 

@@ -8,7 +8,7 @@ Rectangle {
     height: 360
     color: "#000000"
 
-    property int legendWidth: 100
+    property int legendWidth: 400
 
     ProcessList {
         id: proc;
