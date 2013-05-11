@@ -31,18 +31,19 @@ Rectangle {
                 anchors.verticalCenter: box.verticalCenter
                 anchors.left: box.right
                 anchors.leftMargin: 5
-                width: (16 / 2) * 15
+                width: legends.width - memory.width - box.width
                 color: "#FFFFFF"
                 font.family: "Helvetica"
                 font.pointSize: 16
+                clip: true
                 text: "---"
             }
             Text {
                 id: memory
                 anchors.verticalCenter: box.verticalCenter
-                anchors.left: label.right
                 anchors.leftMargin: 5
-                width: legends.width - label.width - box.width
+                width: (memory.font.pointSize / 2) * 15
+                x: legends.width - memory.width
                 color: "#FFFFFF"
                 font.family: "Helvetica"
                 font.pointSize: 16
@@ -53,16 +54,17 @@ Rectangle {
                 box.color = color;
                 label.text = name;
                 memory.text = value;
+                memory.width = memory.paintedWidth; // メモリ容量の描画幅をそのまま幅として指定してプロセス名がかぶらないようにする
             }
         }
     }
 
     Timer {
-        interval: 50;
+        interval: 500;
         running: true;
         repeat: true
         onTriggered: {
-            proc.update(main.height / 20);
+            proc.update(main.height / 20, true);
             graph.requestPaint();
             // update labels
             var data = proc.data();
@@ -120,7 +122,7 @@ Rectangle {
 
             ctx.fillStyle = '#fff';
             ctx.strokeStyle = '#000';
-            ctx.lineWidth = '4.0';
+            ctx.lineWidth = '3.0';
 
             var i;
             // 与えられたデータの合計を計算

@@ -12,7 +12,7 @@ public:
 
     explicit ProcessList(QObject *parent = 0);
 
-    Q_INVOKABLE void update(int listNumMax);
+    Q_INVOKABLE void update(int listNumMax, bool mergeSynonymProcess);
     Q_INVOKABLE QList<QObject *> data() const;
 
 signals:

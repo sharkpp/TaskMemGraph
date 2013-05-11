@@ -15,6 +15,7 @@ public:
     explicit ProcessInfo(QObject *parent = 0);
     ProcessInfo(const ProcessInfo& rhs);
     ProcessInfo(const QString& name_, qint64 memory_);
+    virtual ~ProcessInfo();
 
     QString name() const;
     void setName(const QString& name_);

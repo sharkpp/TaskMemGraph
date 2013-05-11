@@ -18,6 +18,9 @@ HEADERS += processlist.h processinfo.h
 macx {
     LIBS += -framework Security
 }
+win32 {
+    LIBS += -lpsapi
+}
 
 # Installation path
 # target.path =

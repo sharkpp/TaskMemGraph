@@ -1,8 +1,15 @@
 #include <QtGui/QGuiApplication>
 #include "qtquick2applicationviewer.h"
 #include "processlist.h"
-#include <Security/Authorization.h>
 
+#if defined(Q_OS_MAC)
+# include <Security/Authorization.h>
+#elif defined(Q_OS_WIN32)
+#else
+#error "not impliment1"
+#endif
+
+#if defined(Q_OS_MAC)
 int acquireTaskportRight() {
     AuthorizationRef authorization;
     AuthorizationFlags flags
@@ -27,14 +34,16 @@ int acquireTaskportRight() {
     }
     return 0;
 }
+#endif
 
 int main(int argc, char *argv[])
 {
-    fprintf(stderr, "****\n");
+#if defined(Q_OS_MAC)
     if( acquireTaskportRight() < 0 )
     {
         return -1;
     }
+#endif
 
     QGuiApplication app(argc, argv);
 

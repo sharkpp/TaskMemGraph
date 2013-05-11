@@ -20,7 +20,10 @@ ProcessInfo::ProcessInfo(const QString& name_, qint64 memory_)
     : m_name(name_)
     , m_memory(memory_)
 {
+}
 
+ProcessInfo::~ProcessInfo()
+{
 }
 
 QString ProcessInfo::name() const
@@ -50,12 +53,12 @@ QString ProcessInfo::memoryDisplay() const
         const char* label;
     } UNIT[] = {
       //{ 1024, "B" },
-        { 1024*1024, "KB" },
-        { 1024*1024*1024, "MB" },
-        { 1024*1024*1024*1024, "GB" },
+        { 0x100000ULL, "KB" },
+        { 0x40000000ULL, "MB" },
+        { 0x10000000000ULL, "GB" },
     };
 
-    for(size_t i = 0, num = _countof(UNIT); i < num; i++)
+    for(size_t i = 0, num = sizeof(UNIT)/sizeof(UNIT[0]); i < num; i++)
     {
         if( m_memory < UNIT[i].dot )
         {
