@@ -82,14 +82,15 @@ void ProcessList::update(int listNumMax, bool mergeSynonymProcess)
             kinfo_proc& kinfo = kinfo_list_ptr[i];
             kern_return_t kr;
 
-            mach_port_name_t mpn = mach_task_self();
+            // pidからtaskに変換(要管理者権限)
             task_t task;
-            kr = ::task_for_pid(mpn, kinfo.kp_proc.p_pid, &task);
+            kr = ::task_for_pid(mach_task_self(), kinfo.kp_proc.p_pid, &task);
             if( KERN_SUCCESS != kr )
             {
                 continue;
             }
 
+            // プロセスのメモリ使用量を取得
             struct task_basic_info_64 ti;
             mach_msg_type_number_t count = TASK_BASIC_INFO_64_COUNT;
             if( KERN_SUCCESS != ::task_info(task, TASK_BASIC_INFO_64, (task_info_t)&ti, &count) )
@@ -174,6 +175,7 @@ void ProcessList::update(int listNumMax, bool mergeSynonymProcess)
     // メモリの使用量でソート
     qSort(process_list.begin(), process_list.end(), ProcessInfoMemoryComp());
 
+	// 多い項目をまとめる
     for(QList<QObject*>::const_iterator
             ite = process_list.begin(),
             last= process_list.end();

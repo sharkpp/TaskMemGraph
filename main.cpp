@@ -39,10 +39,11 @@ int acquireTaskportRight() {
 int main(int argc, char *argv[])
 {
 #if defined(Q_OS_MAC)
-    if( acquireTaskportRight() < 0 )
-    {
-        return -1;
-    }
+// なんかうまく管理者権限が取得できないorz
+//    if( acquireTaskportRight() < 0 )
+//    {
+//        return -1;
+//    }
 #endif
 
     QGuiApplication app(argc, argv);
